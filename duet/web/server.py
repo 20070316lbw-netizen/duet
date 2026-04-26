@@ -56,6 +56,15 @@ def _make_app():  # noqa: C901
 
     app = FastAPI(title="duet")
 
+    from fastapi.middleware.cors import CORSMiddleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     static_dir = Path(__file__).parent / "static"
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
@@ -178,6 +187,7 @@ def _make_app():  # noqa: C901
         if not sess:
             await websocket.close(code=4404, reason="no such session")
             return
+        
         await websocket.accept()
 
         # 替换连接(允许断线重连)
@@ -228,7 +238,7 @@ def _make_app():  # noqa: C901
     return app
 
 
-def run_web(*, host: str = "127.0.0.1", port: int = 7878,
+def run_web(*, host: str = "0.0.0.0", port: int = 8080,
             resume_id: str | None = None, no_scan: bool = False) -> None:
     """duet --web 的入口。"""
     if not no_scan:
@@ -265,4 +275,4 @@ def run_web(*, host: str = "127.0.0.1", port: int = 7878,
     if resume_id:
         os.environ["DUET_RESUME_ID"] = resume_id
 
-    uvicorn.run(app, host=host, port=port, log_level="info")
+    uvicorn.run(app, host=host, port=port, log_level="info", ws="wsproto")

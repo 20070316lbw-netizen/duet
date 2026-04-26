@@ -357,7 +357,7 @@ def main() -> None:
     ap.add_argument("--resume", help="要恢复的会话 id", default=None)
     ap.add_argument("--no-scan", action="store_true", help="跳过密钥扫描")
     ap.add_argument("--web", action="store_true", help="启动 Web UI(本地浏览器访问)")
-    ap.add_argument("--web-port", type=int, default=7878, help="Web UI 端口")
+    ap.add_argument("--web-port", type=int, default=8080, help="Web UI 端口")
     args = ap.parse_args()
 
     if args.web:
