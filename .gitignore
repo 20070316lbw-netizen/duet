@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+*.egg-info/
+
+# duet runtime — must never be committed
+.duet/
+*.db
+.dream-lock
+sessions/
+
+# secrets
+.env
+.env.*
+*.pem
+*_rsa
+*_rsa.pub
+*.key
+config.toml

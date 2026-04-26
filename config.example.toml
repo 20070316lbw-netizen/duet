@@ -1,0 +1,57 @@
+# Copy to ~/.duet/config.toml
+# DO NOT commit this file with real api_key values. Prefer env vars.
+# 注意:duet 启动时会让你交互式选择 provider + 输入 key,
+#       这里的 api_key 字段全部留空也能跑。
+
+default_route = "@planner"
+
+[workspace]
+# Allowed write roots (relative to cwd at launch). LLM cannot write outside.
+write_paths = ["./"]
+deny_paths  = [".env", ".env.*", "**/secrets/**", "**/*_rsa", "**/*.pem", "**/*.key"]
+
+[planner]
+provider    = "deepseek"          # any provider key defined below
+model       = "deepseek-chat"     # DeepSeek-V3.x chat (latest "V4" alias also works)
+
+[supervisor]
+provider    = "deepseek"
+model       = "deepseek-reasoner" # use the reasoner as the watchdog
+enabled     = false               # default: silent, see §14.6
+
+# ── Providers ─────────────────────────────────────────────────────────────
+# Each [providers.<name>] block declares one endpoint. `kind` picks the
+# wire protocol: "anthropic" or "openai_compat". You can add as many as
+# you want and reference them by name in [planner]/[supervisor].
+
+[providers.anthropic]
+kind        = "anthropic"
+api_key_env = "ANTHROPIC_API_KEY"
+api_key     = ""
+base_url    = "https://api.anthropic.com"
+
+[providers.openai]
+kind        = "openai_compat"
+api_key_env = "OPENAI_API_KEY"
+api_key     = ""
+base_url    = "https://api.openai.com/v1"
+
+[providers.deepseek]
+kind        = "openai_compat"
+api_key_env = "DEEPSEEK_API_KEY"
+api_key     = ""
+base_url    = "https://api.deepseek.com/v1"
+
+[providers.grok]
+kind        = "openai_compat"
+api_key_env = "XAI_API_KEY"
+api_key     = ""
+base_url    = "https://api.x.ai/v1"
+
+[trust]
+write = "manual"          # manual | auto   (MVP: manual only)
+shell = "manual"
+shell_denylist = ["rm -rf /", "sudo ", "curl | sh", ":(){:|:&};:"]
+
+[ui]
+theme = "dark"

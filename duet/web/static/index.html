@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>duet — multi-agent coding</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ─── 启动面板:选 provider + 输 key ───────────────────────── -->
+<dialog id="launcher" class="launcher">
+  <form method="dialog" id="launcher-form">
+    <div class="launch-head">
+      <div class="brand">
+        <span class="dot dot-p"></span><span class="dot dot-s"></span>
+        <strong>duet</strong>
+        <span class="brand-sub">planner + supervisor · multi-agent coding</span>
+      </div>
+    </div>
+
+    <p class="hint">
+      选择一个 LLM 供应商。<b>API key 仅保存在本次进程内存里</b>,关闭服务后即清除。
+    </p>
+
+    <div id="providers" class="providers"><div class="loading">加载中…</div></div>
+
+    <div class="row">
+      <label>Planner 模型
+        <input id="planner-model" placeholder="例如 claude-sonnet-4-5">
+      </label>
+      <label class="key">API Key
+        <input id="api-key" type="password" autocomplete="off"
+               placeholder="不会写盘,仅当前进程有效"
+               spellcheck="false">
+        <button type="button" class="eye" id="toggle-key" title="显示/隐藏">
+          👁
+        </button>
+      </label>
+    </div>
+
+    <div class="row supervisor-row">
+      <label class="check">
+        <input id="sup-enabled" type="checkbox">
+        <span>启用 Supervisor(独立对话流,审计 Planner 的计划)</span>
+      </label>
+      <label>Supervisor 模型
+        <input id="sup-model" placeholder="可与 planner 不同">
+      </label>
+    </div>
+
+    <details class="resume">
+      <summary>从历史会话恢复</summary>
+      <div id="sessions-list" class="sessions"><div class="loading">加载中…</div></div>
+    </details>
+
+    <div class="actions">
+      <button id="start-btn" type="button" class="primary">开始对话</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ─── 主界面 ────────────────────────────────────────────── -->
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="brand sm">
+      <span class="dot dot-p"></span><span class="dot dot-s"></span>
+      <strong>duet</strong>
+    </div>
+    <div class="meta">
+      <span id="meta-planner" class="badge"></span>
+      <span id="meta-supervisor" class="badge"></span>
+      <span id="meta-session" class="badge dim"></span>
+    </div>
+    <div class="actions">
+      <button id="btn-interrupt" title="请求中断 (Esc)">⏸ 中断</button>
+      <button id="btn-side"      title="侧栏:文件改动 / shell 输出">≡ 侧栏</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="col col-planner" data-who="planner">
+      <header class="col-head">
+        <span class="dot dot-p"></span> Planner
+        <span class="col-sub" id="planner-sub"></span>
+      </header>
+      <div class="messages" id="msgs-planner"></div>
+    </section>
+
+    <section class="col col-supervisor" data-who="supervisor">
+      <header class="col-head">
+        <span class="dot dot-s"></span> Supervisor
+        <span class="col-sub" id="supervisor-sub"></span>
+      </header>
+      <div class="messages" id="msgs-supervisor"></div>
+    </section>
+  </main>
+
+  <footer class="composer">
+    <div class="chips">
+      <button class="chip" data-prefill="@planner ">@planner</button>
+      <button class="chip" data-prefill="@supervisor ">@supervisor</button>
+      <button class="chip" data-prefill="@all ">@all</button>
+      <span class="chip-spacer"></span>
+      <button class="chip" data-prefill="/help">/help</button>
+      <button class="chip" data-prefill="/cost">/cost</button>
+      <button class="chip" data-prefill="/sessions">/sessions</button>
+    </div>
+    <div class="input-wrap">
+      <textarea id="input" rows="2"
+        placeholder="@planner 写一个 Python 快排…  (Enter 发送 · Shift+Enter 换行 · /help)"></textarea>
+      <button id="send" class="send">发送 ▸</button>
+    </div>
+    <div id="slash-popup" class="slash-popup" hidden></div>
+  </footer>
+
+  <!-- 侧栏:文件 diff / shell / watcher 输出 -->
+  <aside id="side" class="side">
+    <header><strong>侧栏</strong>
+      <span class="dim">文件改动 · shell 输出 · watcher</span>
+      <button id="side-clear" title="清空">清空</button>
+      <button id="side-close">×</button>
+    </header>
+    <div id="side-body"></div>
+  </aside>
+
+  <!-- 审批弹窗 -->
+  <dialog id="approval">
+    <form method="dialog">
+      <h3 id="approval-label">需要确认</h3>
+      <pre id="approval-body"></pre>
+      <div class="actions">
+        <button id="approve-no"  value="no" class="danger">拒绝</button>
+        <button id="approve-yes" value="yes" class="primary">通过</button>
+      </div>
+    </form>
+  </dialog>
+</div>
+
+<script src="/static/app.js" type="module"></script>
+</body>
+</html>
