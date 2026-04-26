@@ -258,6 +258,20 @@ def run_web(*, host: str = "0.0.0.0", port: int = 8080,
         )
         sys.exit(2)
 
+    # 必须装一个 WebSocket 协议实现 —— 否则 uvicorn 会对 ws 升级请求直接 403。
+    try:
+        import websockets  # noqa: F401
+    except ImportError:
+        try:
+            import wsproto  # noqa: F401
+        except ImportError:
+            sys.stderr.write(
+                "\n[duet] Web UI 需要 WebSocket 库(否则 ws 连接会 403):\n"
+                "       pip install 'websockets>=12'\n"
+                "       (或 pip install duet[web])\n"
+            )
+            sys.exit(2)
+
     app = _make_app()
     msg = f"""
 ┌─────────────────────────────────────────────────────────────
@@ -275,4 +289,4 @@ def run_web(*, host: str = "0.0.0.0", port: int = 8080,
     if resume_id:
         os.environ["DUET_RESUME_ID"] = resume_id
 
-    uvicorn.run(app, host=host, port=port, log_level="info", ws="wsproto")
+    uvicorn.run(app, host=host, port=port, log_level="info")
