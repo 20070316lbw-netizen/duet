@@ -12,8 +12,8 @@ PRICING: dict[str, tuple[float, float]] = {
     "claude-sonnet":  (3.00, 15.00),
     "claude-opus":    (15.00, 75.00),
     "claude-haiku":   (0.80, 4.00),
-    "deepseek-chat":  (0.27, 1.10),
-    "deepseek-reasoner": (0.55, 2.19),
+    "deepseek-v4-flash": (0.14, 0.28),
+    "deepseek-v4-pro":   (0.435, 0.87),  # 75% discount until 2026-05-31, full: (1.74, 3.48)
     "gpt-4o":         (2.50, 10.00),
     "gpt-4o-mini":    (0.15, 0.60),
     "gemini-2.5-pro": (1.25, 10.00),

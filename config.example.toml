@@ -12,11 +12,11 @@ deny_paths  = [".env", ".env.*", "**/secrets/**", "**/*_rsa", "**/*.pem", "**/*.
 
 [planner]
 provider    = "deepseek"          # any provider key defined below
-model       = "deepseek-chat"     # DeepSeek-V3.x chat (latest "V4" alias also works)
+model       = "deepseek-v4-flash"
 
 [supervisor]
 provider    = "deepseek"
-model       = "deepseek-reasoner" # use the reasoner as the watchdog
+model       = "deepseek-v4-pro"
 enabled     = false               # default: silent, see §14.6
 
 # ── Providers ─────────────────────────────────────────────────────────────

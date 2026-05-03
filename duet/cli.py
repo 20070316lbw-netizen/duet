@@ -42,9 +42,10 @@ def _make_provider(name: str, cfg: cfgmod.Config):
     raise SystemExit(f"[duet] provider '{name}': unknown kind '{kind}'")
 
 
-def _build_system_prompt(base: str, mem: MemoryStore, workspace: str) -> str:
+def _build_system_prompt(base: str, mem: MemoryStore, workspace: str, model: str = "") -> str:
     block = mem.render_for_prompt(workspace)
-    return (block + "\n" + base) if block else base
+    filled = base.format(model=model) if model else base
+    return (block + "\n" + filled) if block else filled
 
 
 def _supervisor_view(planner_msg: str, label: str = "Planner") -> str:
@@ -75,7 +76,7 @@ async def _run(session_id: str, cfg: cfgmod.Config, *, resume: bool,
         model=cfg.planner.model,
         provider=_make_provider(cfg.planner.provider, cfg),
         tools=tools_for("planner", watch_mgr=watch_mgr),
-        system_prompt=_build_system_prompt(base_planner_prompt, mem, str(workspace)),
+        system_prompt=_build_system_prompt(base_planner_prompt, mem, str(workspace), cfg.planner.model),
         transcript=transcript,
         base_url=p_cfg.base_url if p_cfg else "",
     )
@@ -85,7 +86,7 @@ async def _run(session_id: str, cfg: cfgmod.Config, *, resume: bool,
         provider=_make_provider(cfg.supervisor.provider, cfg)
             if cfg.supervisor.enabled else planner.provider,
         tools=tools_for("supervisor", watch_mgr=watch_mgr),
-        system_prompt=_build_system_prompt(base_supervisor_prompt, mem, str(workspace)),
+        system_prompt=_build_system_prompt(base_supervisor_prompt, mem, str(workspace), cfg.supervisor.model),
         transcript=transcript,
         base_url=s_cfg.base_url if s_cfg else "",
     )

@@ -21,7 +21,7 @@ def _supported_models(kind: str) -> list[str]:
     if kind == "anthropic":
         return ["claude-sonnet-4-5", "claude-opus-4-5", "claude-haiku-4-5"]
     return [
-        "deepseek-chat", "deepseek-reasoner",
+        "deepseek-v4-flash", "deepseek-v4-pro",
         "gpt-4o", "gpt-4o-mini",
         "grok-3", "grok-3-fast",
     ]
